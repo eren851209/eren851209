@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>檔案上傳</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/myall.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 py-5">
+                <div class="card shadow-lg">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="file01" class="form-label">檔案上傳</label>
+                            <input type="file" id="file01" name="file01" class="form-control">
+                        </div>
+                        <img src="" class="w-25 mt-2 d-none" id="prevImg" alt="">
+                    </div>
+                    <div class="card-footer text-center">
+                        <button class="btn btn-primary" id="upload_btn">確認</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script>
+        var flag_upload = false;
+        $(function(){
+            $("#file01").change(function(){
+                var fileInput = document.getElementById("file01");
+                var file = fileInput.files[0];
+
+                if (file) {
+                    console.log(file);
+                    console.log(file.type);
+                    console.log(file.name);
+                    console.log(file.size);
+                    console.log(URL.createObjectURL(file));
+
+                    if(file.type === "image/png" || file.type === "image/jpeg"){
+                        $("#prevImg").removeClass("d-none");
+                        $("#prevImg").attr("src", URL.createObjectURL(file));
+                        flag_upload = true;
+                    } else {
+                        alert("檔案格式必須是 JPEG 或 PNG!");
+                        $("#prevImg").addClass("d-none");
+                        flag_upload = false;
+                    }
+                }
+            });
+
+            $("#upload_btn").click(function(){
+                if(flag_upload){
+                    var fileInput = document.getElementById("file01");
+                    var formData = new FormData();
+                    formData.append("file", fileInput.files[0]);
+
+                    console.log(formData);
+
+                    $.ajax({
+                        type: "POST",
+                        url: "20240730-uploadfile.php",
+                        dataType: "json",
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function(data) {
+                            console.log(data);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("上传失败:", status, error);
+                        }
+                    });
+
+                } else {
+                    alert("請上傳符合要求的檔案!");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
